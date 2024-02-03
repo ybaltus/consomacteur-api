@@ -59,7 +59,7 @@ class EnergyType
     #[Groups('energyType:read')]
     private string $name;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: true)]
     #[Assert\Length(
         min: 2,
         max: 100

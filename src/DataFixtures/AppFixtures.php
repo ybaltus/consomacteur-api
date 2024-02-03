@@ -32,9 +32,6 @@ final class AppFixtures extends Fixture
         'Provence-Alpes-Côte d\'Azur',
         'Centre-Val de Loire',
         'Grand Est',
-        'Île-de-France',
-        'Bretagne',
-        'Hauts-de-France',
     ];
 
     private const RANDDATES = [

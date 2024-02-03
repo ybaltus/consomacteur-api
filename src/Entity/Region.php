@@ -59,7 +59,7 @@ class Region
     #[Groups('region:read')]
     private string $name;
 
-    #[ORM\Column(length: 150)]
+    #[ORM\Column(length: 150, unique: true)]
     #[Assert\Length(
         min: 2,
         max: 150
