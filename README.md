@@ -1,4 +1,4 @@
-# MangaTrakr
+# Consomacteur
 
 ![Symfony](https://img.shields.io/badge/symfony-%23000000.svg?style=for-the-badge&logo=symfony&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
@@ -6,12 +6,12 @@
 ![PhpStorm](https://img.shields.io/badge/phpstorm-143?style=for-the-badge&logo=phpstorm&logoColor=black&color=black&labelColor=darkorchid)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
-Application web pour suivre la lecture des mangas. Suivre facilement sa progression pour une meilleure expérience de lecture.
+API REST sur les données de consommation d'énergie en France et par régions.
 
 ## Fonctionnalités
+- [x] Création des endpoints
 - [ ] Import csv volumineux
 - [ ] Authentification JWT
-- [ ] Création des endpoints
 
 ## Pour commencer
 
@@ -43,7 +43,6 @@ Application web pour suivre la lecture des mangas. Suivre facilement sa progress
 * [Symfony 7](https://symfony.com/) - Framework PHP
 * Doctrine ORM + MariaDB
 * [doctrine/doctrine-fixtures-bundle](https://symfony.com/bundles/DoctrineFixturesBundle/current/index.html)
-* [fakerphp/faker](https://github.com/FakerPHP/Faker) - Librairie PHP
 
 ## Outils QA & Tests utilisés
 * [friendsofphp/php-cs-fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer) - PHP Coding Standards Fixer
