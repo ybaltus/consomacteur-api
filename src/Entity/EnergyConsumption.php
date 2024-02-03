@@ -2,13 +2,50 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Action\NotFoundAction;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\EnergyConsumptionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnergyConsumptionRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(
+            controller: NotFoundAction::class,
+            output: false,
+            read: false
+        ),
+        new GetCollection(
+            order: [
+                'region.nameSlug' => 'ASC',
+            ]),
+    ],
+    normalizationContext: [
+        'groups' => [
+            'energyConsump:read',
+        ],
+    ]
+)]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: [
+        'energyType.nameSlug' => 'exact',
+        'region.nameSlug' => 'exact',
+    ]
+)]
+#[ApiFilter(
+    DateFilter::class,
+    properties: [
+        'measureDate',
+    ]
+)]
 class EnergyConsumption
 {
     #[ORM\Id]
@@ -28,16 +65,20 @@ class EnergyConsumption
 
     #[ORM\Column(nullable: true)]
     #[Assert\Positive]
+    #[Groups('energyConsump:read')]
     private ?float $measure_value = null;
 
     #[ORM\Column]
     #[Assert\NotNull]
+    #[Groups('energyConsump:read')]
     private \DateTimeImmutable $measureDate;
 
     #[ORM\Column]
+    #[Groups('energyConsump:read')]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('energyConsump:read')]
     private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int
