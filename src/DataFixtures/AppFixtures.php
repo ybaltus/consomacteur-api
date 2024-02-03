@@ -67,6 +67,29 @@ final class AppFixtures extends Fixture
 
     private function addEnergyConsumptions(ObjectManager $manager): void
     {
+        // Ensure at least one entry per EnergyType
+        foreach ($this->energyTypes as $type) {
+            $entity = (new EnergyConsumption())
+                ->setEnergyType($type)
+                ->setRegion($this->regions[mt_rand(0, count(self::REGIONS) - 1)])
+                ->setMeasureDate(new \DateTimeImmutable(self::RANDDATES[mt_rand(0, count(self::RANDDATES) - 1)]))
+                ->setMeasureValue(mt_rand(1566, 9999))
+            ;
+            $manager->persist($entity);
+        }
+
+        // Ensure at least one entry per Regions
+        foreach ($this->regions as $region) {
+            $entity = (new EnergyConsumption())
+                ->setEnergyType($this->energyTypes[mt_rand(0, count(self::ENERTYPES) - 1)])
+                ->setRegion($region)
+                ->setMeasureDate(new \DateTimeImmutable(self::RANDDATES[mt_rand(0, count(self::RANDDATES) - 1)]))
+                ->setMeasureValue(mt_rand(1566, 9999))
+            ;
+            $manager->persist($entity);
+        }
+
+        // Random entries
         for ($i = 0; $i <= 25; ++$i) {
             $entity = (new EnergyConsumption())
                 ->setEnergyType($this->energyTypes[mt_rand(0, count(self::ENERTYPES) - 1)])

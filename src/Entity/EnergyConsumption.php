@@ -66,7 +66,7 @@ class EnergyConsumption
     #[ORM\Column(nullable: true)]
     #[Assert\Positive]
     #[Groups('energyConsump:read')]
-    private ?float $measure_value = null;
+    private ?float $measureValue = null;
 
     #[ORM\Column]
     #[Assert\NotNull]
@@ -112,12 +112,12 @@ class EnergyConsumption
 
     public function getMeasureValue(): ?float
     {
-        return $this->measure_value;
+        return $this->measureValue;
     }
 
-    public function setMeasureValue(?float $measure_value): static
+    public function setMeasureValue(?float $measureValue): static
     {
-        $this->measure_value = $measure_value;
+        $this->measureValue = $measureValue;
 
         return $this;
     }

@@ -50,4 +50,16 @@ class EnergyTypeTest extends KernelTestCase implements EntityTestInterface
         $assertResults = $this->assertViolationsWithValidator($validatorService, $entity);
         $this->assertCount(2, $assertResults[0], $assertResults[1]);
     }
+
+    public function testUniqueNameSlug(): void
+    {
+        /**
+         * @var ValidatorInterface $validatorService
+         */
+        $validatorService = $this->initBootKernelContainer()->get('validator');
+        $entity = $this->getEntity('Electrique');
+        $entity->setNameSlug('electrique');
+        $assertResults = $this->assertViolationsWithValidator($validatorService, $entity);
+        $this->assertCount(1, $assertResults[0], $assertResults[1]);
+    }
 }
