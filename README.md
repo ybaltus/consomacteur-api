@@ -52,4 +52,4 @@ API REST sur les données de consommation d'énergie en France et par régions.
 * [symfony/test-pack](https://symfony.com/doc/6.4/testing.html#application-tests) - PHP Unit
 
 ## Ressources externes utilisées
-* **ODRE (OPENDATA RÉSEAUX-ÉNERGIES)** : https://opendata.reseaux-energies.fr/
+* **ODRE (OPENDATA RÉSEAUX-ÉNERGIES)** : https://odre.opendatasoft.com/explore/dataset/eco2mix-regional-cons-def/export/?disjunctive.libelle_region&disjunctive.nature
