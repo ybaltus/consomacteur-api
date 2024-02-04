@@ -36,3 +36,5 @@ phpstan.neon
 ###> PHPStorm ###
 /.idea/
 ###< PHPStorm ###
+
+/openDataFile/
