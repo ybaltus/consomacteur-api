@@ -64,7 +64,7 @@ class EnergyConsumption
     private Region $region;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Positive]
+    #[Assert\PositiveOrZero]
     #[Groups('energyConsump:read')]
     private ?float $measureValue = null;
 

@@ -62,4 +62,17 @@ class EnergyConsumptionTest extends KernelTestCase implements EntityTestInterfac
         $assertResults = $this->assertViolationsWithValidator($validatorService, $entity);
         $this->assertCount(1, $assertResults[0], $assertResults[1]);
     }
+
+    public function testMeasureValueZero(): void
+    {
+        /**
+         * @var ValidatorInterface $validatorService
+         */
+        $validatorService = $this->initBootKernelContainer()->get('validator');
+        $entity = $this->getEntity('');
+        $entity->setMeasureValue(0);
+
+        $assertResults = $this->assertViolationsWithValidator($validatorService, $entity);
+        $this->assertCount(0, $assertResults[0], $assertResults[1]);
+    }
 }
