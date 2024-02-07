@@ -44,7 +44,7 @@ class ImportOpenDataCommand extends Command
         if ($filename) {
             $io->block(sprintf('
             Filename : %s
-            Source: https://odre.opendatasoft.com/explore/dataset/eco2mix-regional-cons-def/export/?disjunctive.libelle_region&disjunctive.nature
+            Source: https://odre.opendatasoft.com/explore/dataset/eco2mix-regional-cons-def/export
             Date: 2024/02/02
             Size : 291Mo
             Nb entries : > 1M
