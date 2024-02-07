@@ -47,29 +47,37 @@ class ImportOpenDataCommand extends Command
                 return Command::FAILURE;
             }
 
-            // Data insertion with Load Data Infile
-            $io->title('Start data insertion with Load Data Infile SQL function');
+            // Data insertion with Load Data Infile in 1 table
+            $io->title('Data insertion with Load Data Infile SQL function : All entries in a single table');
             $startTime = microtime(true);
-            $this->openDataService->insertDatasFromCsvFile($filename);
+            //            $this->openDataService->insertDatasFromCsvFile($filename);
             $endTime = microtime(true);
             $timeExecution = $endTime - $startTime;
-            $io->info('Time execution of insertion data with load data infile : '.number_format($timeExecution, 4).' seconds');
+            $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');
+
+            // Data insertion with Load Data Infile in a table by energy
+            $io->title('Data insertion with Load Data Infile SQL function : All entries in a table by energy');
+            $startTime = microtime(true);
+            //            $this->openDataService->insertDatasFromCsvFile($filename, true);
+            $endTime = microtime(true);
+            $timeExecution = $endTime - $startTime;
+            $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');
 
             // Processing time with DQL
             $io->title('Start processing time with DQL : '.$maxDatas.' entries');
             $startTime = microtime(true);
-            $this->openDataService->processingWithDQL($maxDatas);
+            //            $this->openDataService->processingWithDQL($maxDatas);
             $endTime = microtime(true);
             $timeExecution = $endTime - $startTime;
-            $io->info('Processing time with DQL queries: '.number_format($timeExecution, 4).' seconds');
+            $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');
 
             // Processing time with SQL
             $io->title('Start processing time with SQL : '.$maxDatas.' entries');
             $startTime = microtime(true);
-            $this->openDataService->processingWithSQL();
+            //            $this->openDataService->processingWithSQL();
             $endTime = microtime(true);
             $timeExecution = $endTime - $startTime;
-            $io->info('Processing time with SQL queries: '.number_format($timeExecution, 4).' seconds');
+            $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');
         }
 
         $io->success('Successful data import !');

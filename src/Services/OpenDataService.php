@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entity\EnergyType;
 use App\Entity\Region;
+use App\Repository\ElectricRepository;
 use App\Repository\EnergyTypeRepository;
 use App\Repository\OpenDataRawRepository;
 use App\Repository\RegionRepository;
@@ -30,6 +31,7 @@ class OpenDataService
         private readonly RegionRepository $regionRepository,
         private readonly OpenDataRawRepository $openDataRawRepository,
         private EnergyTypeRepository $energyTypeRepository,
+        private ElectricRepository $electricRepository,
         private AsciiSlugger $slugger = new AsciiSlugger()
     ) {
         // Init OpenData folder path
@@ -57,10 +59,54 @@ class OpenDataService
         }
     }
 
-    public function insertDatasFromCsvFile(string $filename): void
+    public function insertDatasFromCsvFile(string $filename, bool $isByEnergy = false): void
     {
         // Import all raw datas
-        $this->openDataRawRepository->insertDataWithLoadDataInfileSQLFunction($this->openDataAbsolutePathFolder.'/'.$filename);
+        if (!$isByEnergy) {
+            $this->openDataRawRepository->insertDataWithLoadDataInfileSQLFunction($this->openDataAbsolutePathFolder.'/'.$filename);
+        } else {
+            // Electric
+            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+                $this->openDataAbsolutePathFolder.'/'.$filename,
+                'electric',
+                '@col6'
+            );
+
+            // Thermic
+            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+                $this->openDataAbsolutePathFolder.'/'.$filename,
+                'thermic',
+                '@col7'
+            );
+
+            // Nuclear
+            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+                $this->openDataAbsolutePathFolder.'/'.$filename,
+                'nuclear',
+                '@col8'
+            );
+
+            // Eolien
+            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+                $this->openDataAbsolutePathFolder.'/'.$filename,
+                'eolien',
+                '@col9'
+            );
+
+            // Solar
+            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+                $this->openDataAbsolutePathFolder.'/'.$filename,
+                'solar',
+                '@col10'
+            );
+
+            // Hydraulic
+            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+                $this->openDataAbsolutePathFolder.'/'.$filename,
+                'hydraulic',
+                '@col11'
+            );
+        }
 
         // Extract and save non-existent regions
         $this->regionEntities = $this->regionHandler();
