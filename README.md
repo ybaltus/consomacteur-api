@@ -7,9 +7,12 @@
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
 Tester l'insertion dun fichier csv volumineux à travers la création d'une API REST sur les données de consommation d'énergie en France et par régions.
+
+![My Image](20240207_Tests.png)
+
 ## Fonctionnalités
 - [x] Création des endpoints
-- [ ] Import csv volumineux
+- [x] Import csv volumineux
 - [ ] Authentification JWT
 
 ## Pour commencer
@@ -19,6 +22,7 @@ Tester l'insertion dun fichier csv volumineux à travers la création d'une API 
 - PHP >= 8.2
 - Composer v2
 - MariaDB
+- [Export csv - ODRE](https://odre.opendatasoft.com/explore/dataset/eco2mix-regional-cons-def/export/?disjunctive.libelle_region&disjunctive.nature) 
 
 ### Installation
 
@@ -26,10 +30,12 @@ Tester l'insertion dun fichier csv volumineux à travers la création d'une API 
 
 * Avec **Symfony CLI** +  **Commande make** :
 ```
-- make first-install ## Pour installer les dépendences
+- make first-install
+- symfony console init:datas-db
+- symfony console import:open-data-csv
 ```
 
-## Démarrage
+## Démarrage Api
 
 * Avec **Symfony CLI** + **Commande make** :
 ```
