@@ -6,8 +6,7 @@
 ![PhpStorm](https://img.shields.io/badge/phpstorm-143?style=for-the-badge&logo=phpstorm&logoColor=black&color=black&labelColor=darkorchid)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
-Tester l'insertion dun fichier csv volumineux à travers la création d'une API REST sur les données de consommation d'énergie en France et par régions.
-
+Tester l'insertion d'un fichier CSV volumineux à travers la création d'une API REST sur les données de consommation d'énergie en France et par régions.
 ![My Image](20240207_Tests.png)
 
 ## Fonctionnalités
