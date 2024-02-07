@@ -155,6 +155,30 @@ class OpenDataRawRepository extends ServiceEntityRepository
         $em->flush();
     }
 
+    public function handleDataAfterLoadDataInfileSQL(int $maxDatas, string $energyTable, string $colEnergy): void
+    {
+        $em = $this->getEntityManager();
+        $conn = $em->getConnection();
+        $tableName = $em->getClassMetadata(OpenDataRaw::class)->getTableName();
+
+        // Truncate the table
+        $truncateQuery = sprintf('TRUNCATE TABLE %s', $energyTable);
+        $conn->executeQuery($truncateQuery);
+
+        // Insert new datas
+        $sql = sprintf('
+            INSERT INTO %s (code_insee, region, measure_date, measure_value)
+            SELECT code_insee, region, measure_date, %s
+            FROM %s
+            ', $energyTable, $colEnergy, $tableName);
+
+        if (-1 !== $maxDatas) {
+            $sql .= "LIMIT $maxDatas";
+        }
+
+        $conn->executeQuery($sql);
+    }
+
     /**
      * @param Region[] $regionEntities
      */

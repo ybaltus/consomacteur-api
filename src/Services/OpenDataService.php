@@ -121,8 +121,25 @@ class OpenDataService
         $this->openDataRawRepository->handleDataAfterLoadDataInfileDQL($this->regionEntities, $energyTypeEntities, $maxDatas);
     }
 
-    public function processingWithSQL(): void
+    public function processingWithSQL(int $maxDatas): void
     {
+        // Electric
+        $this->openDataRawRepository->handleDataAfterLoadDataInfileSQL($maxDatas, 'electric', 'consum_electric');
+
+        // Eolien
+        $this->openDataRawRepository->handleDataAfterLoadDataInfileSQL($maxDatas, 'eolien', 'consum_wind');
+
+        // Hydraulic
+        $this->openDataRawRepository->handleDataAfterLoadDataInfileSQL($maxDatas, 'hydraulic', 'consum_hydraulic');
+
+        // Nuclear
+        $this->openDataRawRepository->handleDataAfterLoadDataInfileSQL($maxDatas, 'nuclear', 'consum_nuclear');
+
+        // Solar
+        $this->openDataRawRepository->handleDataAfterLoadDataInfileSQL($maxDatas, 'solar', 'consum_solar');
+
+        // Thermic
+        $this->openDataRawRepository->handleDataAfterLoadDataInfileSQL($maxDatas, 'thermic', 'consum_thermic');
     }
 
     /**
