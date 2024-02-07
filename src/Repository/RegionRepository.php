@@ -13,6 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Region|null findOneBy(array $criteria, array $orderBy = null)
  * @method Region[]    findAll()
  * @method Region[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Region|null findOneByNameSlug(\Symfony\Component\String\AbstractUnicodeString $slugName)
  */
 class RegionRepository extends ServiceEntityRepository
 {

@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\EnergyConsumption;
 use App\Entity\EnergyType;
+use App\Entity\OpenDataRaw;
 use App\Entity\Region;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -55,6 +56,7 @@ final class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $this->addOpenDataRaws($manager);
         $this->addEnergyTypes($manager);
         $this->addRegions($manager);
 
@@ -121,6 +123,25 @@ final class AppFixtures extends Fixture
             ;
             $manager->persist($entity);
             $this->regions[] = $entity;
+        }
+    }
+
+    private function addOpenDataRaws(ObjectManager $manager): void
+    {
+        foreach (self::REGIONS as $key => $region) {
+            $entity = (new OpenDataRaw())
+                ->setMeasureDate(new \DateTimeImmutable(self::RANDDATES[mt_rand(0, count(self::RANDDATES) - 1)]))
+                ->setRegion($region)
+                ->setCodeInsee($key)
+                ->setConsumSolar(mt_rand(1566, 9999))
+                ->setConsumWind(mt_rand(1566, 9999))
+                ->setConsumNuclear(mt_rand(1566, 9999))
+                ->setConsumHydraulic(mt_rand(1566, 9999))
+                ->setConsumElectric(mt_rand(1566, 9999))
+                ->setConsumThermic(mt_rand(1566, 9999))
+
+            ;
+            $manager->persist($entity);
         }
     }
 }

@@ -2,15 +2,13 @@
 
 namespace App\Tests\Entity;
 
-use App\Entity\EnergyConsumption;
-use App\Repository\EnergyTypeRepository;
-use App\Repository\RegionRepository;
+use App\Entity\OpenDataRaw;
 use App\Tests\Trait\AppTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class EnergyConsumptionTest extends KernelTestCase implements EntityTestInterface
+class OpenDataRawTest extends KernelTestCase implements EntityTestInterface
 {
     use AppTestTrait;
 
@@ -26,9 +24,15 @@ class EnergyConsumptionTest extends KernelTestCase implements EntityTestInterfac
     public function getEntity(?string $title): object
     {
         $currentDate = new \DateTimeImmutable();
-        return (new EnergyConsumption())
+        return (new OpenDataRaw())
             ->setMeasureDate($currentDate)
-            ->setMeasureValue(200)
+            ->setCodeInsee(10)
+            ->setRegion($title)
+            ->setConsumElectric(20)
+            ->setConsumHydraulic(20)
+            ->setConsumNuclear(10)
+            ->setConsumSolar(56)
+            ->setConsumWind(56)
         ;
     }
 
@@ -39,13 +43,8 @@ class EnergyConsumptionTest extends KernelTestCase implements EntityTestInterfac
          * @var ValidatorInterface $validatorService
          */
         $validatorService = $container->get('validator');
-        $energyTypeRepository = $container->get(EnergyTypeRepository::class);
-        $regionRepository = $container->get(RegionRepository::class);
 
-        $entity = $this->getEntity('');
-        $entity->setEnergyType($energyTypeRepository->findOneBy(['isLocked' => false]));
-        $entity->setRegion($regionRepository->findOneBy(['isLocked' => false]));
-
+        $entity = $this->getEntity('Bretagne');
         $assertResults = $this->assertViolationsWithValidator($validatorService, $entity);
         $this->assertCount(0, $assertResults[0], $assertResults[1]);
     }
@@ -57,20 +56,23 @@ class EnergyConsumptionTest extends KernelTestCase implements EntityTestInterfac
          */
         $validatorService = $this->initBootKernelContainer()->get('validator');
         $entity = $this->getEntity('');
-        $entity->setMeasureValue(-1);
 
         $assertResults = $this->assertViolationsWithValidator($validatorService, $entity);
-        $this->assertCount(1, $assertResults[0], $assertResults[1]);
+        $this->assertCount(2, $assertResults[0], $assertResults[1]);
     }
 
-    public function testMeasureValueZero(): void
+    public function testConsumptionValuesZero(): void
     {
         /**
          * @var ValidatorInterface $validatorService
          */
         $validatorService = $this->initBootKernelContainer()->get('validator');
-        $entity = $this->getEntity('');
-        $entity->setMeasureValue(0);
+        $entity = $this->getEntity('Bretagne');
+        $entity->setConsumElectric(0);
+        $entity->setConsumHydraulic(0);
+        $entity->setConsumNuclear(0);
+        $entity->setConsumSolar(0);
+        $entity->setConsumWind(0);
 
         $assertResults = $this->assertViolationsWithValidator($validatorService, $entity);
         $this->assertCount(0, $assertResults[0], $assertResults[1]);

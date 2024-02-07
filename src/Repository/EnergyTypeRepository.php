@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\EnergyType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -36,13 +37,19 @@ class EnergyTypeRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?EnergyType
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @return EnergyType[]
+     *
+     * @throws QueryException
+     */
+    public function getAllWithNameSlugIndex(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.isLocked = FALSE')
+            ->orderBy('e.nameSlug')
+            ->indexBy('e', 'e.nameSlug')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
