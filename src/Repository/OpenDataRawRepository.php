@@ -2,8 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\EnergyConsumption;
+use App\Entity\EnergyType;
 use App\Entity\OpenDataRaw;
+use App\Entity\Region;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -52,5 +56,126 @@ class OpenDataRawRepository extends ServiceEntityRepository
             ", $fileAbsolutePath, $tableName);
 
         $conn->executeQuery($insertQuery);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function extractRegionFromRaw(): array
+    {
+        $query = $this->createQueryBuilder('o')
+            ->select('o.region, o.codeInsee')
+            ->orderBy('o.region')
+            ->distinct(true)
+            ->getQuery()
+        ;
+
+        return $query->getResult();
+    }
+
+    /**
+     * @param Region[]                  $regionEntities
+     * @param array<string, EnergyType> $energyTypeEntities
+     */
+    public function handleDataAfterLoadDataInfileDQL(array $regionEntities, array $energyTypeEntities, int $maxDatas): void
+    {
+        $em = $this->getEntityManager();
+        $qb = $this->createQueryBuilder('o')
+            ->setMaxResults($maxDatas)
+            ->getQuery();
+
+        foreach ($qb->toIterable([], Query::HYDRATE_ARRAY) as $key => $row) {
+            // do stuff with the data in the row
+
+            // Get Region
+            $region = $this->searchRegion($regionEntities, $row['region']);
+
+            // Electric EnergyConsumtion
+            $electric = $this->newEntityByEnergyType(
+                $row['measureDate'],
+                $row['consumElectric'],
+                $region,
+                $energyTypeEntities['electrique']
+            );
+            $em->persist($electric);
+
+            // Eolien EnergyConsumtion
+            $eolien = $this->newEntityByEnergyType(
+                $row['measureDate'],
+                $row['consumWind'],
+                $region,
+                $energyTypeEntities['eolien']
+            );
+            $em->persist($eolien);
+
+            // Hydraulic EnergyConsumtion
+            $hydraulique = $this->newEntityByEnergyType(
+                $row['measureDate'],
+                $row['consumHydraulic'],
+                $region,
+                $energyTypeEntities['hydraulique']
+            );
+            $em->persist($hydraulique);
+
+            // Nuclear EnergyConsumtion
+            $nuclear = $this->newEntityByEnergyType(
+                $row['measureDate'],
+                $row['consumNuclear'],
+                $region,
+                $energyTypeEntities['nucleaire']
+            );
+            $em->persist($nuclear);
+
+            // Solar EnergyConsumtion
+            $solar = $this->newEntityByEnergyType(
+                $row['measureDate'],
+                $row['consumSolar'],
+                $region,
+                $energyTypeEntities['solaire']
+            );
+            $em->persist($solar);
+
+            // Thermic EnergyConsumtion
+            $thermic = $this->newEntityByEnergyType(
+                $row['measureDate'],
+                $row['consumThermic'],
+                $region,
+                $energyTypeEntities['thermique']
+            );
+            $em->persist($thermic);
+
+            // Save in DB
+            if ($key % 100) {
+                $em->flush();
+            }
+
+            // detach from Doctrine, so that it can be Garbage-Collected immediately
+            //            $em->detach($row);
+        }
+        $em->flush();
+    }
+
+    /**
+     * @param Region[] $regionEntities
+     */
+    private function searchRegion(array $regionEntities, string $needle): ?Region
+    {
+        foreach ($regionEntities as $region) {
+            if (str_contains($region->getName(), $needle)) {
+                return $region;
+            }
+        }
+
+        return null;
+    }
+
+    private function newEntityByEnergyType(\DateTimeImmutable $measureDate, float $measureValue, Region $region, EnergyType $energyType): EnergyConsumption
+    {
+        return (new EnergyConsumption())
+                ->setMeasureDate($measureDate)
+                ->setMeasureValue($measureValue)
+                ->setRegion($region)
+                ->setEnergyType($energyType)
+        ;
     }
 }

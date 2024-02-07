@@ -26,6 +26,7 @@ class ImportOpenDataCommand extends Command
     {
         $this
             ->addArgument('filename', InputArgument::REQUIRED, 'The filename')
+            ->addArgument('maxDatas', InputArgument::OPTIONAL, 'Define maximum number of data items for processing functions')
         ;
     }
 
@@ -33,6 +34,7 @@ class ImportOpenDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $filename = $input->getArgument('filename');
+        $maxDatas = $input->getArgument('maxDatas') ?? 1000;
 
         if ($filename) {
             $io->note(sprintf('Filename : %s', $filename));
@@ -45,7 +47,29 @@ class ImportOpenDataCommand extends Command
                 return Command::FAILURE;
             }
 
+            // Data insertion with Load Data Infile
+            $io->title('Start data insertion with Load Data Infile SQL function');
+            $startTime = microtime(true);
             $this->openDataService->insertDatasFromCsvFile($filename);
+            $endTime = microtime(true);
+            $timeExecution = $endTime - $startTime;
+            $io->info('Time execution of insertion data with load data infile : '.number_format($timeExecution, 4).' seconds');
+
+            // Processing time with DQL
+            $io->title('Start processing time with DQL : '.$maxDatas.' entries');
+            $startTime = microtime(true);
+            $this->openDataService->processingWithDQL($maxDatas);
+            $endTime = microtime(true);
+            $timeExecution = $endTime - $startTime;
+            $io->info('Processing time with DQL queries: '.number_format($timeExecution, 4).' seconds');
+
+            // Processing time with SQL
+            $io->title('Start processing time with SQL : '.$maxDatas.' entries');
+            $startTime = microtime(true);
+            $this->openDataService->processingWithSQL();
+            $endTime = microtime(true);
+            $timeExecution = $endTime - $startTime;
+            $io->info('Processing time with SQL queries: '.number_format($timeExecution, 4).' seconds');
         }
 
         $io->success('Successful data import !');

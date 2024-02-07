@@ -18,8 +18,7 @@ final class InitDataService
 
     public function __construct(
         private readonly EntityManagerInterface $em
-    )
-    {
+    ) {
     }
 
     public function initEnergyTypes(): void
