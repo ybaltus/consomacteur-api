@@ -28,7 +28,7 @@ class EnergyConsumptionTest extends ApiTestCase implements EndpointTestInterface
 
     public function testGetCollection(): void
     {
-        $response = static::createClient()->request('GET', '/api/energy_consumptions');
+        $response = static::createClient()->request('GET', self::BASE_URL.'/energy_consumptions');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -37,7 +37,7 @@ class EnergyConsumptionTest extends ApiTestCase implements EndpointTestInterface
 
     public function testGetCollectionWithEnergytypeFilter(): void
     {
-        $response = static::createClient()->request('GET', '/api/energy_consumptions?energyType[nameSlug]=electrique');
+        $response = static::createClient()->request('GET', self::BASE_URL.'/energy_consumptions?energyType[nameSlug]=electrique');
         $response = json_decode($response->getContent(), true);
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -46,7 +46,7 @@ class EnergyConsumptionTest extends ApiTestCase implements EndpointTestInterface
 
     public function testGetCollectionWithRegionFilter(): void
     {
-        $response = static::createClient()->request('GET', '/api/energy_consumptions?region[nameSlug]=bretagne');
+        $response = static::createClient()->request('GET', self::BASE_URL.'/energy_consumptions?region[nameSlug]=bretagne');
         $response = json_decode($response->getContent(), true);
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');

@@ -24,7 +24,7 @@ class OpenDataRawTest extends ApiTestCase implements EndpointTestInterface
 
     public function testGetCollection(): void
     {
-        $response = static::createClient()->request('GET', '/api/open_data_raws');
+        $response = static::createClient()->request('GET', self::BASE_URL.'/open_data_raws');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -32,7 +32,7 @@ class OpenDataRawTest extends ApiTestCase implements EndpointTestInterface
 
     public function testGetCollectionWithRegionFilter(): void
     {
-        $response = static::createClient()->request('GET', '/api/open_data_raws?region=Bret');
+        $response = static::createClient()->request('GET', self::BASE_URL.'/open_data_raws?region=Bret');
         $response = json_decode($response->getContent(), true);
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -41,7 +41,7 @@ class OpenDataRawTest extends ApiTestCase implements EndpointTestInterface
 
     public function testGetCollectionWithCodeInseeFilter(): void
     {
-        $response = static::createClient()->request('GET', '/api/open_data_raws?code_insee=1');
+        $response = static::createClient()->request('GET', self::BASE_URL.'/open_data_raws?code_insee=1');
         $response = json_decode($response->getContent(), true);
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');

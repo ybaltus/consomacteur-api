@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnergyConsumptionRepository::class)]
 #[ApiResource(
+    routePrefix: '/opendata',
     operations: [
         new Get(
             controller: NotFoundAction::class,

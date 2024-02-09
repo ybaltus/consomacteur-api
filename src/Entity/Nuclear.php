@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NuclearRepository::class)]
 #[ApiResource(
+    routePrefix: '/opendata',
     operations: [
         new Get(
             controller: NotFoundAction::class,

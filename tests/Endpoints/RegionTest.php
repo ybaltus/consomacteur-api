@@ -29,7 +29,7 @@ class RegionTest extends ApiTestCase implements EndpointTestInterface
 
     public function testGetCollection(): void
     {
-        $response = static::createClient()->request('GET', '/api/energy_types');
+        $response = static::createClient()->request('GET', self::BASE_URL.'/energy_types');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
