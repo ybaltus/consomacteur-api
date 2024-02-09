@@ -12,7 +12,7 @@ Tester l'insertion d'un fichier CSV volumineux à travers la création d'une API
 ## Fonctionnalités
 - [x] Création des endpoints
 - [x] Import csv volumineux
-- [ ] Authentification JWT
+- [x] Authentification JWT
 
 ## Pour commencer
 
@@ -25,19 +25,14 @@ Tester l'insertion d'un fichier CSV volumineux à travers la création d'une API
 
 ### Installation
 
-Éxécutez les commandes ci-dessous pour installer le projet.
+Éxécutez les commandes ci-dessous pour utiliser le projet.
 
 * Avec **Symfony CLI** +  **Commande make** :
 ```
 - make first-install
 - symfony console init:datas-db
 - symfony console import:open-data-csv
-```
-
-## Démarrage Api
-
-* Avec **Symfony CLI** + **Commande make** :
-```
+- symfony console app:create-user
 - make sf-start 
 ```
 
