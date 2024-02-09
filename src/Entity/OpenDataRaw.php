@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OpenDataRawRepository::class)]
 #[ApiResource(
+    routePrefix: '/opendata',
     operations: [
         new Get(
             controller: NotFoundAction::class,

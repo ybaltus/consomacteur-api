@@ -6,8 +6,10 @@ use App\Entity\EnergyConsumption;
 use App\Entity\EnergyType;
 use App\Entity\OpenDataRaw;
 use App\Entity\Region;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class AppFixtures extends Fixture
 {
@@ -54,17 +56,36 @@ final class AppFixtures extends Fixture
      */
     private array $regions = [];
 
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher
+    ) {
+    }
+
     public function load(ObjectManager $manager): void
     {
         $this->addOpenDataRaws($manager);
         $this->addEnergyTypes($manager);
         $this->addRegions($manager);
+        $this->addUserTest($manager);
 
         $manager->flush();
 
         $this->addEnergyConsumptions($manager);
 
         $manager->flush();
+    }
+
+    private function addUserTest(ObjectManager $manager): void
+    {
+        $user = (new User())
+            ->setUsername('toto')
+        ;
+        $hashedPassword = $this->passwordHasher->hashPassword(
+            $user,
+            'toto1234'
+        );
+        $user->setPassword($hashedPassword);
+        $manager->persist($user);
     }
 
     private function addEnergyConsumptions(ObjectManager $manager): void

@@ -73,6 +73,9 @@ jobs:
         run: php vendor/bin/phpstan analyse
 
       # -- PHP Unit --------------------------------------
+      - name: Generate keys JWT
+        run: php bin/console lexik:jwt:generate-keypair --env=test
+
       - name: Copy .env.test.local
         run: cp .env.test .env.test.local
 
