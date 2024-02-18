@@ -2,12 +2,22 @@
 
 namespace App\Services;
 
-use App\Entity\EnergyType;
+use App\Entity\Electric;
+use App\Entity\Eolien;
+use App\Entity\Hydraulic;
+use App\Entity\Nuclear;
 use App\Entity\Region;
+use App\Entity\Solar;
+use App\Entity\Thermic;
 use App\Repository\ElectricRepository;
 use App\Repository\EnergyTypeRepository;
+use App\Repository\EolienRepository;
+use App\Repository\HydraulicRepository;
+use App\Repository\NuclearRepository;
 use App\Repository\OpenDataRawRepository;
 use App\Repository\RegionRepository;
+use App\Repository\SolarRepository;
+use App\Repository\ThermicRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -30,8 +40,13 @@ class OpenDataService
         private readonly EntityManagerInterface $em,
         private readonly RegionRepository $regionRepository,
         private readonly OpenDataRawRepository $openDataRawRepository,
-        private EnergyTypeRepository $energyTypeRepository,
-        private ElectricRepository $electricRepository,
+        private readonly EnergyTypeRepository $energyTypeRepository,
+        private readonly ElectricRepository $electricRepository,
+        private readonly ThermicRepository $thermicRepository,
+        private readonly HydraulicRepository $hydraulicRepository,
+        private readonly SolarRepository $solarRepository,
+        private readonly NuclearRepository $nuclearRepository,
+        private readonly EolienRepository $eolienRepository,
         private AsciiSlugger $slugger = new AsciiSlugger()
     ) {
         // Init OpenData folder path
@@ -59,7 +74,131 @@ class OpenDataService
         }
     }
 
-    public function insertDatasFromCsvFile(string $filename, bool $isByEnergy = false): void
+    public function insertDatasFromCsvFileWithMessenger(string $filename): void
+    {
+        $startTime = microtime(true);
+        $handle = fopen($this->openDataAbsolutePathFolder.'/'.$filename, 'r');
+        $entries = [];
+
+        if (!$handle) {
+            return;
+        }
+
+        while (false !== ($data = fgetcsv($handle, null, ';'))) {
+            $entries[] = $data;
+        }
+
+        if (!empty($entries)) {
+            // Remove headers
+            array_shift($entries);
+
+            // Reset tables
+            $this->electricRepository->truncateTableByName('electric');
+            $this->eolienRepository->truncateTableByName('eolien');
+            $this->hydraulicRepository->truncateTableByName('hydraulic');
+            $this->nuclearRepository->truncateTableByName('nuclear');
+            $this->solarRepository->truncateTableByName('solar');
+            $this->thermicRepository->truncateTableByName('thermic');
+
+            $batchSize = 100;
+
+            // Save the energies
+            foreach ($entries as $key => $entry) {
+                // Required data
+                $codeInsee = intval($entry[0]);
+                $region = $entry[1];
+                $measureDate = new \DateTimeImmutable($entry[5]);
+                $electricValue = intval($entry[6]);
+                $thermicValue = intval($entry[7]);
+                $nuclearValue = intval($entry[8]);
+                $eolienValue = intval($entry[9]);
+                $solarValue = intval($entry[10]);
+                $hydraulicValue = intval($entry[11]);
+
+                // Electric entity
+                $electricEntity = $this->createNewEnergyEntity(
+                    $codeInsee,
+                    $region,
+                    $measureDate,
+                    $electricValue,
+                    Electric::class
+                );
+
+                $this->em->persist($electricEntity);
+
+                // Thermic entity
+                $thermicEntity = $this->createNewEnergyEntity(
+                    $codeInsee,
+                    $region,
+                    $measureDate,
+                    $thermicValue,
+                    Thermic::class
+                );
+
+                $this->em->persist($thermicEntity);
+
+                // Nuclear entity
+                $nuclearEntity = $this->createNewEnergyEntity(
+                    $codeInsee,
+                    $region,
+                    $measureDate,
+                    $nuclearValue,
+                    Nuclear::class
+                );
+
+                $this->em->persist($nuclearEntity);
+
+                // Eolien entity
+                $eolienEntity = $this->createNewEnergyEntity(
+                    $codeInsee,
+                    $region,
+                    $measureDate,
+                    $eolienValue,
+                    Eolien::class
+                );
+
+                $this->em->persist($eolienEntity);
+
+                // Solar entity
+                $solarEntity = $this->createNewEnergyEntity(
+                    $codeInsee,
+                    $region,
+                    $measureDate,
+                    $solarValue,
+                    Solar::class
+                );
+
+                $this->em->persist($solarEntity);
+
+                // Hydraulic entity
+                $hydraulicEntity = $this->createNewEnergyEntity(
+                    $codeInsee,
+                    $region,
+                    $measureDate,
+                    $hydraulicValue,
+                    Hydraulic::class
+                );
+
+                $this->em->persist($hydraulicEntity);
+
+                if (0 === ($key % $batchSize)) {
+                    $this->em->flush();
+
+                    // The clear() method detaches all entities from the EntityManager, which can help prevent memory issues
+                    $this->em->clear();
+                }
+            }
+
+            $this->em->flush();
+            $this->em->clear();
+
+            $endTime = microtime(true);
+            $timeExecution = $endTime - $startTime;
+            var_dump('Time execution : '.number_format($timeExecution, 4));
+        }
+    }
+
+    public function insertDatasFromCsvFileWithLoadDataInfile(string $filename, bool $isByEnergy = false): void
     {
         // Import all raw datas
         if (!$isByEnergy) {
@@ -73,35 +212,35 @@ class OpenDataService
             );
 
             // Thermic
-            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+            $this->thermicRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
                 $this->openDataAbsolutePathFolder.'/'.$filename,
                 'thermic',
                 '@col7'
             );
 
             // Nuclear
-            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+            $this->nuclearRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
                 $this->openDataAbsolutePathFolder.'/'.$filename,
                 'nuclear',
                 '@col8'
             );
 
             // Eolien
-            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+            $this->eolienRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
                 $this->openDataAbsolutePathFolder.'/'.$filename,
                 'eolien',
                 '@col9'
             );
 
             // Solar
-            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+            $this->solarRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
                 $this->openDataAbsolutePathFolder.'/'.$filename,
                 'solar',
                 '@col10'
             );
 
             // Hydraulic
-            $this->electricRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
+            $this->hydraulicRepository->insertDataWithLoadDataInfileSQLFunctionPerEnergy(
                 $this->openDataAbsolutePathFolder.'/'.$filename,
                 'hydraulic',
                 '@col11'
@@ -112,7 +251,7 @@ class OpenDataService
         $this->regionEntities = $this->regionHandler();
     }
 
-    public function processingWithDQL(int $maxDatas): void
+    public function processingWithDQLAfterLoadDataInfile(int $maxDatas): void
     {
         // Retrieve all energyType entities
         $energyTypeEntities = $this->energyTypeRepository->getAllWithNameSlugIndex();
@@ -121,7 +260,7 @@ class OpenDataService
         $this->openDataRawRepository->handleDataAfterLoadDataInfileDQL($this->regionEntities, $energyTypeEntities, $maxDatas);
     }
 
-    public function processingWithSQL(int $maxDatas): void
+    public function processingWithSQLAfterLoadDataInfile(int $maxDatas): void
     {
         // Electric
         $this->openDataRawRepository->handleDataAfterLoadDataInfileSQL($maxDatas, 'electric', 'consum_electric');
@@ -183,5 +322,20 @@ class OpenDataService
         }
 
         return true;
+    }
+
+    private function createNewEnergyEntity(
+        int $codeInsee,
+        string $region,
+        \DateTimeImmutable $measureDate,
+        int $measureValue,
+        string $entityName
+    ): object {
+        return (new $entityName())
+            ->setCodeInsee($codeInsee)
+            ->setRegion($region)
+            ->setMeasureDate($measureDate)
+            ->setMeasureValue($measureValue)
+        ;
     }
 }
