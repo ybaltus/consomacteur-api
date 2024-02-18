@@ -4,6 +4,17 @@ namespace App\Repository\Trait;
 
 trait EnergyTypeTrait
 {
+    public function truncateTableByName(
+        string $tableName,
+    ): void {
+        $em = $this->getEntityManager();
+        $conn = $em->getConnection();
+
+        // Truncate the table
+        $truncateQuery = sprintf('TRUNCATE TABLE %s', $tableName);
+        $conn->executeQuery($truncateQuery);
+    }
+
     public function insertDataWithLoadDataInfileSQLFunctionPerEnergy(
         string $fileAbsolutePath,
         string $tableName,

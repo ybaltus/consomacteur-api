@@ -47,7 +47,7 @@ class ImportOpenDataCommand extends Command
             Source: https://odre.opendatasoft.com/explore/dataset/eco2mix-regional-cons-def/export
             Date: 2024/02/02
             Size : 291Mo
-            Nb entries : > 1M
+            Nb entries : 2M
             ', $filename));
 
             $fileExist = $this->openDataService->checkFileExists($filename);
@@ -58,42 +58,42 @@ class ImportOpenDataCommand extends Command
                 return Command::FAILURE;
             }
 
-            // Data insertion with Load Data Infile in 1 table
-            $io->title('Data insertion with Load Data Infile SQL function : All entries in a single table');
+            // Insert data with sql command "LOAD DATA INFILE" in 1 table
+            $io->title('Insert data with sql command "LOAD DATA INFILE" : All entries in a single table');
             $startTime = microtime(true);
-            $this->openDataService->insertDatasFromCsvFile($filename);
+            $this->openDataService->insertDatasFromCsvFileWithLoadDataInfile($filename);
             $endTime = microtime(true);
             $timeExecution = $endTime - $startTime;
             $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');
 
-            // Data insertion with Load Data Infile in a table by energy
-            $io->title('Data insertion with Load Data Infile SQL function : All entries in a table by energy');
+            // Insert data with sql command "LOAD DATA INFILE" in a table by energy
+            $io->title('Insert data with sql command "LOAD DATA INFILE" (x6) : All entries in a table by energy');
             $startTime = microtime(true);
-            $this->openDataService->insertDatasFromCsvFile($filename, true);
+            $this->openDataService->insertDatasFromCsvFileWithLoadDataInfile($filename, true);
             $endTime = microtime(true);
             $timeExecution = $endTime - $startTime;
             $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');
 
             // Processing time with DQL
-            $io->title('Processing time with DQL after loadDataInfile : '.$maxDatas.' entries');
+            $io->title('Test processing time with DQL after "LOAD DATA INFILE" : '.$maxDatas.' entries');
             $startTime = microtime(true);
-            $this->openDataService->processingWithDQL($maxDatas);
+            $this->openDataService->processingWithDQLAfterLoadDataInfile($maxDatas);
             $endTime = microtime(true);
             $timeExecution = $endTime - $startTime;
             $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');
 
             // Processing time with SQL
-            $io->title('Processing time with SQL after loadDataInfile : '.$maxDatas.' entries');
+            $io->title('Test processing time with SQL after "LOAD DATA INFILE" : '.$maxDatas.' entries');
             $startTime = microtime(true);
-            $this->openDataService->processingWithSQL($maxDatas);
+            $this->openDataService->processingWithSQLAfterLoadDataInfile($maxDatas);
             $endTime = microtime(true);
             $timeExecution = $endTime - $startTime;
             $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');
 
             // Processing time with SQL
-            $io->title('Processing time with SQL after loadDataInfile : All entries');
+            $io->title('Test processing time with SQL after "LOAD DATA INFILE" : All entries');
             $startTime = microtime(true);
-            $this->openDataService->processingWithSQL(-1);
+            $this->openDataService->processingWithSQLAfterLoadDataInfile(-1);
             $endTime = microtime(true);
             $timeExecution = $endTime - $startTime;
             $io->comment('Time execution : '.number_format($timeExecution, 4).' seconds');

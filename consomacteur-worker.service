@@ -1,0 +1,14 @@
+# /etc/systemd/system/consomacteur-worker.service
+[Unit]
+Description=Symfony consomacteur-worker messenger-consume async %i
+StartLimitIntervalSec=20s
+StartLimitBurst=5
+
+[Service]
+ExecStart=/usr/bin/php -d memory_limit=-1 /home/yannis/Projets/Perso/consomacteur-api/bin/console messenger:consume async --memory-limit=512M --time-limit=300
+Restart=always
+RestartSec=30
+TimeoutSec=300
+
+[Install]
+WantedBy=default.target

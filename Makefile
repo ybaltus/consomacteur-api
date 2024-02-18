@@ -117,10 +117,37 @@ sf-rdb-test: ## Reset database for tests
 ##----------------- 🎉 First install 🎉 -------------#
 first-install: composer-install qa-sf-security-checker sf-ddc sf-dmm ## First installation
 
-###----------------- 🎉 Start With docker 🎉 -------------#
-#docker-compose-up: ## Start with docker-compose
-#	docker-compose build --no-cache
-#	docker-compose up -d
+###----------------- 🎉 Messenger 🎉 -------------#
+messenger-consume:## Consume message
+	php bin/console messenger:consume async --memory-limit=512M --time-limit=300 -vv
+
+messenger-stop-workers:## Stop the workers
+	$(SYMFONY_CONSOLE) messenger:stop-workers
+
+###----------------- 🎉 Systemd worker 🎉 -------------#
+systemd-create-link: ## Create the link for the service (Use absolute path for both)
+	sudo ln -s /home/yannis/Projets/Perso/consomacteur-api/consomacteur-worker.service /etc/systemd/system/consomacteur-worker.service
+
+systemd-worker-start: ## Start the worker with systemd
+	sudo systemctl start consomacteur-worker.service
+
+systemd-worker-stop: ## Stop the worker with systemd
+	sudo systemctl stop consomacteur-worker.service
+
+systemd-disable-service: ## Disable and remove the service
+	systemctl disable consomacteur-worker.service
+
+systemd-rm-service: ## Remove the link service
+	sudo rm /etc/systemd/system/consomacteur-worker.service
+
+systemd-worker-status: ## Status of the worker with systemd
+	systemctl status consomacteur-worker.service
+
+systemd-daemon-reload: ## Reload systemd
+	sudo systemctl daemon-reload
+
+systemd-journalctl: ## Show the logs
+	sudo journalctl -xfeu consomacteur-worker.service
 
 ##----------------- 🆘  HELP 🆘  -------------#
 help: ## Show this help.

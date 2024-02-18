@@ -7,11 +7,12 @@
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
 Tester l'insertion d'un fichier CSV volumineux à travers la création d'une API REST sur les données de consommation d'énergie en France et par régions.
-![My Image](20240207_Tests.png)
+![Consomacteur_tests](consomacteur_tests.png)
 
 ## Fonctionnalités
 - [x] Création des endpoints
-- [x] Import csv volumineux
+- [x] Import csv volumineux avec LOAD DATA LOCAL INFILE
+- [x] Import csv volumineux avec Symfony Messenger + Systemd
 - [x] Authentification JWT
 
 ## Pour commencer
@@ -27,13 +28,28 @@ Tester l'insertion d'un fichier CSV volumineux à travers la création d'une API
 
 Éxécutez les commandes ci-dessous pour utiliser le projet.
 
-* Avec **Symfony CLI** +  **Commande make** :
+* Initialisation:
 ```
 - make first-install
 - symfony console init:datas-db
-- symfony console import:open-data-csv
 - symfony console app:create-user
-- make sf-start 
+```
+* (option 1) Importer les données :
+```
+- symfony console import:open-data-csv nom_du_fichier.csv
+```
+
+* (option 2) Importer les données avec messenger :
+```
+- symfony console import:open-data-csv-messenger nom_du_fichier.csv
+- make messenger-consume
+```
+
+* (option 2) Importer les données avec messenger + un service systemd :
+```
+- make systemd-create-link ## Editer le chemin
+- make systemd-worker-start
+- symfony console import:open-data-csv-messenger nom_du_fichier.csv
 ```
 
 ## Stack technique
